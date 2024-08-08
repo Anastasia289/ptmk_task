@@ -39,27 +39,25 @@ class Database:
         self.conn.commit()
 
     def save_employees(self, employees):
-        # for i in tqdm(range(len(employees)),
-        #               desc="Сохраняем сотрудников в базу"):  
         data = [
             (employee.full_name, employee.birth_date, employee.gender)
-            for employee in tqdm((employees), desc="Сохраняем сотрудников в базу")]
-        
-        args_str = ','.join(self.cursor.mogrify("(%s,%s,%s)", x).decode('utf-8') for x in data)
-        self.cursor.execute("INSERT INTO employees (full_name, birth_date, gender) VALUES" + args_str)
+            for employee in tqdm((employees),
+                                 desc="Сохраняем сотрудников в базу")]
+        args_str = ','.join(
+            self.cursor.mogrify("(%s,%s,%s)", x).decode('utf-8') for x in data)
+        self.cursor.execute(
+            '''INSERT INTO employees (
+                full_name,
+                birth_date,
+                gender)
+            VALUES''' + args_str)
         self.conn.commit()
-        
-        # data = [
-        #     (employee.full_name, employee.birth_date, employee.gender)
-        #     for employee in employees]
-        # args_str = ','.join(self.cursor.mogrify("(%s,%s,%s)", x).decode('utf-8') for x in data)
-        # self.cursor.execute("INSERT INTO employees (full_name, birth_date, gender) VALUES" + args_str)
-        # self.conn.commit()
 
     def get_employees(self):
         """Выбираем уникальные full_name - birth_date."""
         self.cursor.execute('''
-        SELECT DISTINCT ON (full_name, birth_date) full_name, birth_date, gender
+        SELECT DISTINCT ON (full_name, birth_date)
+        full_name, birth_date, gender
         FROM employees
         ORDER BY full_name, birth_date
         ''')
@@ -88,11 +86,7 @@ class Database:
         self.conn.commit()
 
     def stat(self):
-        # self.cursor.execute('SELECT count(*) FROM employees;')
-        # self.cursor.execute('DELETE FROM employees *;')
-        # self.conn.commit()
         self.cursor.execute('SELECT count(*) FROM employees;')
-
         return self.cursor.fetchall()
 
     def close(self):
