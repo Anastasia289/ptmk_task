@@ -1,3 +1,4 @@
+import logging
 import random
 import time
 from datetime import datetime
@@ -9,6 +10,8 @@ from tqdm import tqdm
 from constants import (CHAR_LEN, COUNT_EMPLOYEES_TO_CREATE,
                        COUNT_NAME_STARTWITH_F, MAX_AGE, MIN_AGE)
 from models import Employee
+
+logger = logging.getLogger(__name__)
 
 
 class Controller:
@@ -32,9 +35,10 @@ class Controller:
     def create_table(self):
         try:
             self.database.create_table()
+            logger.info('Таблица создана')
             print('Таблица создана')
         except (Exception, Error) as error:
-            print("Ошибка при создании таблицы", error)
+            logger.error("Ошибка при создании таблицы", error)
 
     def get_date(self):
         while True:
@@ -53,7 +57,7 @@ class Controller:
                 else:
                     return user_input
             except ValueError:
-                print(msg)
+                logger.error(msg)
 
     def get_gender(self):
         while True:
@@ -65,7 +69,7 @@ class Controller:
                 else:
                     raise ValueError
             except ValueError:
-                print('''Пол введен неверно. Может быть Male или Female.
+                logger.error('''Пол введен неверно. Может быть Male или Female.
                       Введите пол: _''')
 
     def get_employee(self):
@@ -78,18 +82,21 @@ class Controller:
         try:
             employee = self.get_employee()
             employee.save(self.database)
+            logger.info('Сотрудник добавлен')
             print('Сотрудник добавлен')
         except (Exception, Error) as error:
-            print("Ошибка при создании сотрудника", error)
+            logger.error("Ошибка при создании сотрудника", error)
 
     def get_employees(self):
         try:
             if not self.database.get_employees():
                 print('База пуста')
             self.list_employees(self.database.get_employees())
+            logger.info('Получены данные из базы, всего строк: '
+                        f'{self.database.stat()}.')
             print(f'Всего строк: {self.database.stat()}')
         except (Exception, Error) as error:
-            print("Ошибка при получении списка сотрудников", error)
+            logger.error("Ошибка при создании сотрудников", error)
 
     def create_a_lot_of_employees(self):
         employees = []
@@ -118,7 +125,7 @@ class Controller:
             employees = self.create_a_lot_of_employees()
             self.database.save_employees(employees)
         except (Exception, Error) as error:
-            print("Ошибка при создании множества сотрудников", error)
+            logger.error("Ошибка при создании множества сотрудников", error)
 
     def get_male_employees_with_fname(self):
         try:
@@ -128,19 +135,21 @@ class Controller:
             final_time = end_time - start_time
             self.list_employees(employees)
             print(f'Время выполнения:  {final_time}')
+            logger.info(f'Сотрудники на f получены за:  {final_time}')
         except (Exception, Error) as error:
-            print("Ошибка при выборке", error)
+            logger.error("Ошибка при выборке", error)
 
     def create_index(self):
         try:
             self.database.create_index()
             print("Индексы созданы")
+            logger.info("Индексы созданы")
         except (Exception, Error) as error:
-            print("Ошибка при создании индексов", error)
+            logger.error("Ошибка при создании индексов", error)
 
     def list_employees(self, employees):
         for employee in employees:
-            age = employee.calculate_age()  # Расчет возраста сотрудника
+            age = employee.calculate_age()
             print(f'{employee.full_name:<{CHAR_LEN}} '
                   f' {employee.birth_date.strftime('%Y-%m-%d')} '
                   f'{employee.gender} {age} полных лет')

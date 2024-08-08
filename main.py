@@ -1,6 +1,13 @@
+import logging
+import sys
+
+from psycopg2 import Error
+
 from constants import DATABASE, HOST, PASSWORD, PORT, USER
 from controller import Controller
 from database_postgres import Database
+
+logger = logging.getLogger(__name__)
 
 
 def get_action():
@@ -23,18 +30,22 @@ def get_action():
         except ValueError:
             print('Такого варианта нет, выбирайте из имеющихся')
 
-# def check_db():
-#     return2
-
 
 def main():
-    database = Database(
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT,
-        database=DATABASE,
-        )
+    try:
+        database = Database(
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT,
+            database=DATABASE,
+            )
+    except (Exception, Error) as error:
+        logger.critical('Программа принудительно остановлена.'
+                        'Проверьте данные для подключения к бд',
+                        error)
+        sys.exit()
+
     controller = Controller(database)
     action = 0
     while action != '7':
@@ -44,4 +55,13 @@ def main():
 
 
 if __name__ == "__main__":
+    log_format = ('%(asctime)s [%(levelname)s] - '
+                  '(%(filename)s).%(funcName)s:%(lineno)d - %(message)s')
+    logging.basicConfig(
+        level=logging.INFO,
+        filename='program.log',
+        filemode='w',
+        encoding='utf-8',
+        format=log_format,)
+    logger.setLevel(logging.DEBUG)
     main()
