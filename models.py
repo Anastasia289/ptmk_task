@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
+
 
 class Employee:
     def __init__(self, full_name, birth_date, gender):
@@ -9,10 +11,7 @@ class Employee:
 
     def calculate_age(self):
         today = datetime.today()
-        age = today.year - self.birth_date.year - (
-            (today.month, today.day) <
-            (self.birth_date.month, self.birth_date.day)  #
-        )
+        age = relativedelta(today, self.birth_date).years
         return age
 
     def save(self, db):

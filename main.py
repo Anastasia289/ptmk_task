@@ -1,6 +1,6 @@
-from constants import (DATABASE, HOST, PASSWORD, PORT, USER)
-from database_postgres import Database
+from constants import DATABASE, HOST, PASSWORD, PORT, USER
 from controller import Controller
+from database_postgres import Database
 
 
 def get_action():

@@ -1,8 +1,8 @@
 import psycopg2
 from psycopg2 import sql
+from tqdm import tqdm
 
 from models import Employee
-from tqdm import tqdm
 
 
 class Database:

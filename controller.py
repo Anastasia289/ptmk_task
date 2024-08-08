@@ -4,12 +4,11 @@ from datetime import datetime
 
 from faker import Faker
 from psycopg2 import Error
+from tqdm import tqdm
 
 from constants import (CHAR_LEN, COUNT_EMPLOYEES_TO_CREATE,
-                       COUNT_NAME_STARTWITH_F, MAX_AGE,
-                       MIN_AGE,)
+                       COUNT_NAME_STARTWITH_F, MAX_AGE, MIN_AGE)
 from models import Employee
-from tqdm import tqdm
 
 
 class Controller:
@@ -41,7 +40,8 @@ class Controller:
         while True:
             try:
                 msg = 'Дата введена неверно, используйте формат %Y-%m-%d'
-                user_input = input('\n Введите дату рождения в формате %Y-%m-%d')  
+                user_input = input(
+                    '\n Введите дату рождения в формате %Y-%m-%d')
                 date = datetime.strptime(user_input, "%Y-%m-%d")
                 today = datetime.today()
                 if today.year - date.year < MIN_AGE:
@@ -85,7 +85,7 @@ class Controller:
     def get_employees(self):
         try:
             if not self.database.get_employees():
-                print('База пуста')       
+                print('База пуста')
             self.list_employees(self.database.get_employees())
             print(f'Всего строк: {self.database.stat()}')
         except (Exception, Error) as error:
@@ -95,7 +95,7 @@ class Controller:
         employees = []
         faker = Faker()
         for i in tqdm(range(COUNT_EMPLOYEES_TO_CREATE),
-                      desc="Генерируем данные сотрудников"):  
+                      desc="Генерируем данные сотрудников"):
             name = faker.name()
             birth_date = faker.date_of_birth(
                 minimum_age=MIN_AGE,
